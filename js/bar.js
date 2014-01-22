@@ -15,7 +15,28 @@
 
   var chart = d3.select('body')
     .append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+  var barWidth = width / data.length;
+
+  var bar = chart.selectAll('g')
+    .data(data)
+    .enter()
+    .append('g')
+    .attr('transform', function(d, i) {
+      return 'translate(' + i * barWidth + ', 0)';
+    });
+
+  bar.append('rect')
+    .attr('y', function(d) {
+      return height - d;
+    })
+    .attr('height', function(d) {
+      return d;
+    })
+    .attr('width', barWidth - 1);
 
 }();
