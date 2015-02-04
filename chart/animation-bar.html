@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Animation-Bar</title>
+  <style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #eee;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 11px;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div id="graph" class="span12"></div>
+  </div>
+</div>
+<script src="../js/lib/d3.js"></script>
+<script>
+var width = 900, height = 300, pad = 20, left_pad = 100;
+var x = d3.scale.ordinal().rangeRoundBands([left_pad, width - pad], 0.1);
+var y = d3.scale.linear().range([height-pad, pad]);
+
+var xAxis = d3.svg.axis().scale(x).orient("bottom");
+var yAxis = d3.svg.axis().scale(y).orient("left");
+
+var svg = d3.select("#graph").append("svg")
+                .attr("width", width).attr("height", height);
+
+var data = { "0": 5529632,
+  "1": 4431841,
+  "2": 3026793,
+  "3": 2356835,
+  "4": 1736520,
+  "5": 1401528,
+  "6": 1664739,
+  "7": 2578953,
+  "8": 4194565,
+  "9": 6110175,
+  "10": 8557259,
+  "11": 10193246,
+  "12": 9508111,
+  "13": 10569728,
+  "14": 11496436,
+  "15": 12381447,
+  "16": 12330919,
+  "17": 11128248,
+  "18": 9129717,
+  "19": 7509560,
+  "20": 7161696,
+  "21": 7528052,
+  "22": 7232888,
+  "23": 6750381 };
+
+data = d3.keys(data).map(function (key) {
+  return {bucket: Number(key),
+    N: data[key]};
+  });
+x.domain(data.map(function (d) { return d.bucket; }));
+    y.domain([0, d3.max(data, function (d) { return d.N; })]);
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(0, "+(height-pad)+")")
+  .call(xAxis);
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate("+(left_pad-pad)+", 0)")
+  .call(yAxis);
+svg.selectAll('rect')
+  .data(data)
+  .enter()
+  .append('rect')
+  .attr('class', 'bar')
+  .attr('x', function (d) { return x(d.bucket); })
+  .attr('width', x.rangeBand())
+  .attr('y', function (d) { return y(d.N); })
+  .attr('height', function (d) { return height-pad - y(d.N); });
+svg.selectAll('rect')
+  .data(data)
+  .enter()
+  .append('rect')
+  .attr('class', 'bar')
+  .attr('x', function (d) { return x(d.bucket); })
+  .attr('width', x.rangeBand())
+  .attr('y', height-pad)
+  .transition()
+  .delay(function (d) { return d.bucket*20; })
+  .duration(800)
+  .attr('y', function (d) { return y(d.N); })
+  .attr('height', function (d) { return height-pad - y(d.N); });
+</script>
+</body>
+</html>
